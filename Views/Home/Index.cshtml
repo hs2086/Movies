@@ -1,0 +1,542 @@
+@using MovieApp.ViewModel
+@model AllMovieVM
+
+@{
+    ViewData["Title"] = "Home Page";
+    ViewData["Message"] = "Welcome to the Movie List!";
+}
+
+<div class="movie-viewer-container">
+    <button class="nav-btn prev-btn">❮</button>
+
+    @foreach (MovieVM movie in Model.Trending)
+    {
+        <div class="movie-fullscreen" style="background-image: url('@movie.PosterUrl');">
+            <div class="movie-overlay">
+                <div class="movie-content">
+                    <h1 class="movie-title">@movie.Name</h1>
+                    <div class="movie-meta">
+                        <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                        <span class="movie-year">| @movie.ReleaseDate.Year</span>
+                    </div>
+                    <p class="movie-description">@movie.Description</p>
+                    <div class="movie-actions">
+                        <a href="/Home/Show/@movie.Id" class="btn btn-primary" >Watch Now</a>
+                        <a href="/Home/AddList/@movie.Id" class="btn btn-outline-light">+ My List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <button class="nav-btn next-btn">❯</button>
+</div>
+
+<div class="popular-movies-container">
+    <h2 class="section-title">Latest Movies</h2>
+    <div class="popular-movies-wrapper">
+        @if (Model.Latest.Any())
+        {
+            <button class="popular-nav-btn popular-prev-btn">❮</button>
+            <div class="popular-movies-scroll">
+                @foreach (MovieVM movie in Model.Latest)
+                {
+                    <div class="popular-movie-card-wrapper">
+                        <a href="/Home/Show/@movie.Id" class="popular-movie-card-link">
+                            <div class="popular-movie-card" style="background-image: url('@movie.PosterUrl'), url('/images/default-poster.jpg');">
+                                <div class="movie-overlay">
+                                    <div class="movie-card-content">
+                                        <h3 class="movie-title-popular">@movie.Name</h3>
+                                        <div class="movie-info-popular">
+                                            <span class="movie-year-popular">@movie.ReleaseDate.Year</span>
+                                            <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                                        </div>
+                                        <p class="movie-description-popular">@movie.Description</p>
+                                        <div class="btn btn-sm btn-primary">View Details</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="popular-nav-btn popular-next-btn">❯</button>
+        }
+        else
+        {
+            <div class="no-movies-message">
+                No similar movies found
+            </div>
+        }
+    </div>
+</div>
+
+<div class="popular-movies-container">
+    <h2 class="section-title">Top Rated Movies</h2>
+    <div class="popular-movies-wrapper">
+        @if (Model.TopRated.Any())
+        {
+            <button class="popular-nav-btn popular-prev-btn">❮</button>
+            <div class="popular-movies-scroll">
+                @foreach (MovieVM movie in Model.TopRated)
+                {
+                    <div class="popular-movie-card-wrapper">
+                        <a href="/Home/Show/@movie.Id" class="popular-movie-card-link">
+                            <div class="popular-movie-card" style="background-image: url('@movie.PosterUrl'), url('/images/default-poster.jpg');">
+                                <div class="movie-overlay">
+                                    <div class="movie-card-content">
+                                        <h3 class="movie-title-popular">@movie.Name</h3>
+                                        <div class="movie-info-popular">
+                                            <span class="movie-year-popular">@movie.ReleaseDate.Year</span>
+                                            <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                                        </div>
+                                        <p class="movie-description-popular">@movie.Description</p>
+                                        <div class="btn btn-sm btn-primary">View Details</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="popular-nav-btn popular-next-btn">❯</button>
+        }
+        else
+        {
+            <div class="no-movies-message">
+                No similar movies found
+            </div>
+        }
+    </div>
+</div>
+
+<div class="popular-movies-container">
+    <h2 class="section-title">Up Coming Movies</h2>
+    <div class="popular-movies-wrapper">
+        @if (Model.Upcoming.Any())
+        {
+            <button class="popular-nav-btn popular-prev-btn">❮</button>
+            <div class="popular-movies-scroll">
+                @foreach (MovieVM movie in Model.Upcoming)
+                {
+                    <div class="popular-movie-card-wrapper">
+                        <a href="/Home/Show/@movie.Id" class="popular-movie-card-link">
+                            <div class="popular-movie-card" style="background-image: url('@movie.PosterUrl'), url('/images/default-poster.jpg');">
+                                <div class="movie-overlay">
+                                    <div class="movie-card-content">
+                                        <h3 class="movie-title-popular">@movie.Name</h3>
+                                        <div class="movie-info-popular">
+                                            <span class="movie-year-popular">@movie.ReleaseDate.Year</span>
+                                            <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                                        </div>
+                                        <p class="movie-description-popular">@movie.Description</p>
+                                        <div class="btn btn-sm btn-primary">View Details</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="popular-nav-btn popular-next-btn">❯</button>
+        }
+        else
+        {
+            <div class="no-movies-message">
+                No similar movies found
+            </div>
+        }
+    </div>
+</div>
+
+<div class="popular-movies-container">
+    <h2 class="section-title">Now Playing Movies</h2>
+    <div class="popular-movies-wrapper">
+        @if (Model.NowPlaying.Any())
+        {
+            <button class="popular-nav-btn popular-prev-btn">❮</button>
+            <div class="popular-movies-scroll">
+                @foreach (MovieVM movie in Model.NowPlaying)
+                {
+                    <div class="popular-movie-card-wrapper">
+                        <a href="/Home/Show/@movie.Id" class="popular-movie-card-link">
+                            <div class="popular-movie-card" style="background-image: url('@movie.PosterUrl'), url('/images/default-poster.jpg');">
+                                <div class="movie-overlay">
+                                    <div class="movie-card-content">
+                                        <h3 class="movie-title-popular">@movie.Name</h3>
+                                        <div class="movie-info-popular">
+                                            <span class="movie-year-popular">@movie.ReleaseDate.Year</span>
+                                            <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                                        </div>
+                                        <p class="movie-description-popular">@movie.Description</p>
+                                        <div class="btn btn-sm btn-primary">View Details</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="popular-nav-btn popular-next-btn">❯</button>
+        }
+        else
+        {
+            <div class="no-movies-message">
+                No similar movies found
+            </div>
+        }
+    </div>
+</div>
+
+<div class="popular-movies-container">
+    <h2 class="section-title">Popular Movies</h2>
+    <div class="popular-movies-wrapper">
+        @if (Model.Popular.Any())
+        {
+            <button class="popular-nav-btn popular-prev-btn">❮</button>
+            <div class="popular-movies-scroll">
+                @foreach (MovieVM movie in Model.Popular)
+                {
+                    <div class="popular-movie-card-wrapper">
+                        <a href="/Home/Show/@movie.Id" class="popular-movie-card-link">
+                            <div class="popular-movie-card" style="background-image: url('@movie.PosterUrl'), url('/images/default-poster.jpg');">
+                                <div class="movie-overlay">
+                                    <div class="movie-card-content">
+                                        <h3 class="movie-title-popular">@movie.Name</h3>
+                                        <div class="movie-info-popular">
+                                            <span class="movie-year-popular">@movie.ReleaseDate.Year</span>
+                                            <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                                        </div>
+                                        <p class="movie-description-popular">@movie.Description</p>
+                                        <div class="btn btn-sm btn-primary">View Details</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="popular-nav-btn popular-next-btn">❯</button>
+        }
+        else
+        {
+            <div class="no-movies-message">
+                No similar movies found
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Base styles */
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Fullscreen movie viewer */
+    .movie-viewer-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .movie-fullscreen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: #000;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+        .movie-fullscreen.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+    /* Navigation buttons */
+    .nav-btn, .popular-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        font-size: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+        .nav-btn:hover, .popular-nav-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+    .prev-btn, .popular-prev-btn {
+        left: 20px;
+    }
+
+    .next-btn, .popular-next-btn {
+        right: 20px;
+    }
+
+    /* Movie overlay styles */
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        padding: 2rem;
+        color: white;
+    }
+
+    .movie-title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .movie-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: center;
+    }
+
+    .movie-description {
+        max-width: 50%;
+        margin-bottom: 1.5rem;
+    }
+
+    .movie-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Popular movies section */
+    .popular-movies-container {
+        position: relative;
+        width: 100%;
+        padding: 2rem 4rem;
+        background-color: black;
+        margin-top: 2rem;
+    }
+
+    .popular-movies-scroll {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        gap: 1.5rem;
+        padding: 1rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .popular-movie-card-wrapper {
+        flex: 0 0 300px;
+    }
+
+    .popular-movie-card {
+        height: 450px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+    }
+
+        .popular-movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+        }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+    }
+
+    .movie-card-content {
+        color: white;
+    }
+
+    .movie-title-popular {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .movie-info-popular {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .movie-year-popular {
+        color: #ddd;
+        font-size: 0.9rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .movie-description-popular {
+        color: #eee;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+
+    /* Navigation buttons */
+    .popular-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.9);
+        border: none;
+        color: black;
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+        .popular-nav-btn:hover {
+            background: white;
+        }
+
+    .popular-prev-btn {
+        left: 20px;
+    }
+
+    .popular-next-btn {
+        right: 20px;
+    }
+
+    .btn.btn-sm.btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+        .btn.btn-sm.btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+        .btn.btn-sm.btn-primary:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .popular-movies-container {
+            padding: 1rem;
+        }
+
+        .popular-movie-card-wrapper {
+            flex: 0 0 250px;
+        }
+
+        .popular-movie-card {
+            height: 400px;
+        }
+
+        .popular-nav-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trending movies navigation
+        const trendingMovies = document.querySelectorAll('.movie-fullscreen');
+        const trendingPrevBtn = document.querySelector('.prev-btn');
+        const trendingNextBtn = document.querySelector('.next-btn');
+        let trendingCurrentIndex = 0;
+
+        // Show first trending movie initially
+        if (trendingMovies.length > 0) {
+            trendingMovies[0].classList.add('active');
+        }
+
+        function showTrendingMovie(index) {
+            trendingMovies.forEach(movie => movie.classList.remove('active'));
+            trendingMovies[index].classList.add('active');
+        }
+
+        trendingPrevBtn.addEventListener('click', () => {
+            trendingCurrentIndex = (trendingCurrentIndex - 1 + trendingMovies.length) % trendingMovies.length;
+            showTrendingMovie(trendingCurrentIndex);
+        });
+
+        trendingNextBtn.addEventListener('click', () => {
+            trendingCurrentIndex = (trendingCurrentIndex + 1) % trendingMovies.length;
+            showTrendingMovie(trendingCurrentIndex);
+        });
+
+        // Popular movies navigation
+        const popularScroll = document.querySelector('.popular-movies-scroll');
+        const popularPrevBtn = document.querySelector('.popular-prev-btn');
+        const popularNextBtn = document.querySelector('.popular-next-btn');
+
+        popularPrevBtn.addEventListener('click', () => {
+            popularScroll.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        popularNextBtn.addEventListener('click', () => {
+            popularScroll.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+
+        // Keyboard navigation for trending
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                trendingCurrentIndex = (trendingCurrentIndex - 1 + trendingMovies.length) % trendingMovies.length;
+                showTrendingMovie(trendingCurrentIndex);
+            } else if (e.key === 'ArrowRight') {
+                trendingCurrentIndex = (trendingCurrentIndex + 1) % trendingMovies.length;
+                showTrendingMovie(trendingCurrentIndex);
+            }
+        });
+    });
+</script>

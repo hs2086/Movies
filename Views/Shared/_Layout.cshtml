@@ -1,0 +1,478 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Night</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Night.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        html {
+  font-size: 14px;
+}
+
+@@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(24, 22, 59);
+    color: white;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+        /* Search Suggestions Styles */
+        .search-container {
+        position: relative;
+        width: 100%;
+        }
+
+        .search-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(47, 50, 90, 0.95);
+        border-radius: 0 0 4px 4px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-top: none;
+        z-index: 1050;
+        max-height: 400px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        display: none;
+        }
+
+        .search-suggestion-item {
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-suggestion-item:last-child {
+        border-bottom: none;
+        }
+
+        .search-suggestion-item:hover {
+        background-color: rgba(229, 9, 20, 0.3); /* Netflix red with transparency */
+        }
+
+        .search-suggestion-item.active {
+        background-color: rgba(229, 9, 20, 0.7); /* Solid Netflix red */
+        }
+
+        .search-suggestion-poster {
+        width: 40px;
+        height: 60px;
+        object-fit: cover;
+        margin-right: 12px;
+        border-radius: 3px;
+        flex-shrink: 0;
+        }
+
+        .search-suggestion-title {
+        color: white;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        }
+
+        .search-suggestion-no-results {
+        padding: 15px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        font-style: italic;
+        }
+
+        .search-suggestion-loading {
+        padding: 15px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        }
+
+        .search-suggestion-loading:after {
+        content: '...';
+        animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @@keyframes dots {
+        0%, 20%
+
+        {
+        content: '.';
+        }
+
+        40% {
+        content: '..';
+        }
+
+        60%, 100% {
+        content: '...';
+        }
+
+        }
+
+        /* Enhance existing search input */
+        .search-form .form-control {
+        padding-right: 40px; /* Space for potential clear button */
+        }
+
+        .search-form {
+        position: relative;
+        margin: 0 20px 0 60px; /* Changed to 60px left margin */
+        flex-grow: 1;
+        max-width: 400px;
+        }
+
+        /* Clear button for search */
+        .search-clear {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.5);
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: none;
+        }
+
+        .search-clear:hover {
+        color: white;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+        .search-suggestions {
+        width: 100vw;
+        left: -20px;
+        right: -20px;
+        border-radius: 0;
+        }
+
+        .search-form {
+        margin: 0 10px !important; /* Keep smaller margins on mobile */
+        max-width: 100% !important;
+        }
+
+        }
+
+        /* Scrollbar styling for suggestions */
+        .search-suggestions::-webkit-scrollbar {
+        width: 6px;
+        }
+
+        .search-suggestions::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-suggestions::-webkit-scrollbar-thumb {
+        background: rgba(229, 9, 20, 0.5);
+        border-radius: 3px;
+        }
+
+        .search-suggestions::-webkit-scrollbar-thumb:hover {
+        background: rgba(229, 9, 20, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar fixed-top navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3"
+        style="background-color: rgb(47, 50, 90, 0.7)">
+            <div class="container-fluid">
+                <a class="navbar-brand text-uppercase fw-bold" asp-area="" asp-controller="Home" asp-action="Index">Night</a>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Trending" asp-route-category="5">Trending</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Trending" asp-route-category="1">Popular</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Trending" asp-route-category="2">Top Rated</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Trending" asp-route-category="3">Up Coming</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Trending" asp-route-category="4">Now Playing</a>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+                            </li>
+                        }
+                    </ul>
+                    <form class="d-flex search-form" method="post" asp-controller="Home" asp-action="Search" id="searchForm">
+                        <div class="search-container" style="position: relative; width: 100%;">
+                            <input class="form-control me-2 search-input" type="search"
+                                   placeholder="Search" aria-label="Search"
+                                   name="searchString" id="searchInput" autocomplete="off" />
+                            <button type="button" class="search-clear">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div class="search-suggestions" style="display: none;"></div>
+                        </div>
+                    </form>
+                    <ul class="navbar-nav auth-links">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item d-flex align-items-center">
+                                <span class="welcome-text">Welcome</span>
+                                <a class="nav-link user-email" href="/Account/Profile">@User.Identity.Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link logout-btn" href="/Account/Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/Account/Register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/Account/Login">Login</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid p-0">
+        <!-- p-0 removes padding -->
+        <main role="main" class="m-0">
+            <!-- m-0 removes margin -->
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer py-4" style="background-color: rgba(47, 50, 90, 0.7); color: rgba(255, 255, 255, 0.7); position:relative;">
+        <div class="container text-center">
+            <div class="mb-3">
+                <a href="" target="_blank" class="text-white me-3" style="font-size: 1.2rem;">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://x.com" target="_blank" class="text-white me-3" style="font-size: 1.2rem;">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://instagram.com" target="_blank" class="text-white" style="font-size: 1.2rem;">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div class="footer-text">
+                &copy; 2025 - Night - Hamdi
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+                $(document).ready(function() {
+            // Search suggestions functionality
+            const searchInput = $('#searchInput');
+            const searchForm = $('#searchForm');
+            const suggestionsContainer = $('.search-suggestions');
+            let currentRequest = null;
+            let selectedIndex = -1;
+
+            // Debounce function to limit API calls while typing
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this, args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), wait);
+                };
+            }
+
+            // Show loading state in suggestions
+            function showLoading() {
+                suggestionsContainer.html(
+                    '<div class="search-suggestion-loading">Searching</div>'
+                ).show();
+            }
+
+            // Show no results message
+            function showNoResults() {
+                suggestionsContainer.html(
+                    '<div class="search-suggestion-no-results">No results found</div>'
+                ).show();
+            }
+
+            // Clear suggestions
+            function clearSuggestions() {
+                suggestionsContainer.hide().empty();
+                selectedIndex = -1;
+            }
+
+            // Fetch search suggestions from server
+            function fetchSuggestions(query) {
+                if (currentRequest) {
+                    currentRequest.abort();
+                }
+
+                showLoading();
+
+                currentRequest = $.ajax({
+                    url: '/Home/SearchSuggestions',
+                    type: 'GET',
+                    data: { term: query },
+                    success: function(data) {
+                        if (data && data.length > 0) {
+                            renderSuggestions(data);
+                        } else {
+                            showNoResults();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        if (status !== 'abort') {
+                            suggestionsContainer.html(
+                                '<div class="search-suggestion-no-results">Error loading suggestions</div>'
+                            ).show();
+                        }
+                    },
+                    complete: function() {
+                        currentRequest = null;
+                    }
+                });
+            }
+
+            // Render suggestions in the dropdown
+            function renderSuggestions(suggestions) {
+                let html = '';
+                suggestions.forEach((movie, index) => {
+                    html += `
+                        <div class="search-suggestion-item" data-id="${movie.id}" data-index="${index}">
+                            <img src="${movie.poster || '/images/default-poster.jpg'}"
+                                 class="search-suggestion-poster"
+                                 alt="${movie.title}">
+                            <div class="search-suggestion-title">${movie.title}</div>
+                        </div>
+                    `;
+                });
+                suggestionsContainer.html(html).show();
+            }
+
+            // Handle input events with debouncing
+            searchInput.on('input', debounce(function() {
+                const query = $(this).val().trim();
+
+                if (query.length < 2) {
+                    clearSuggestions();
+                    return;
+                }
+
+                fetchSuggestions(query);
+            }, 300));
+
+            // Handle suggestion selection
+            suggestionsContainer.on('click', '.search-suggestion-item', function() {
+                const movieId = $(this).data('id');
+                window.location.href = '/Home/Show/' + movieId;
+            });
+
+            // Hide suggestions when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.search-container').length) {
+                    clearSuggestions();
+                }
+            });
+
+            // Keyboard navigation
+            searchInput.on('keydown', function(e) {
+                const items = $('.search-suggestion-item');
+                const key = e.key;
+
+                if (items.length === 0) return;
+
+                // Arrow Down
+                if (key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedIndex = (selectedIndex < items.length - 1) ? selectedIndex + 1 : 0;
+                    updateSelection(items);
+                }
+                // Arrow Up
+                else if (key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedIndex = (selectedIndex > 0) ? selectedIndex - 1 : items.length - 1;
+                    updateSelection(items);
+                }
+                // Enter
+                else if (key === 'Enter') {
+                    if (selectedIndex >= 0) {
+                        e.preventDefault();
+                        const selectedItem = items.eq(selectedIndex);
+                        window.location.href = '/Home/Show/' + selectedItem.data('id');
+                    }
+                }
+                // Escape
+                else if (key === 'Escape') {
+                    clearSuggestions();
+                    searchInput.blur();
+                }
+            });
+
+            // Update selected item visually
+            function updateSelection(items) {
+                items.removeClass('active');
+                if (selectedIndex >= 0) {
+                    items.eq(selectedIndex).addClass('active').get(0).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }
+            }
+
+            // Clear search when X is clicked
+            $('.search-clear').on('click', function() {
+                searchInput.val('').focus();
+                $(this).hide();
+                clearSuggestions();
+            });
+
+            // Show/hide clear button based on input
+            searchInput.on('input', function() {
+                $('.search-clear').toggle($(this).val().length > 0);
+            });
+
+            // Prevent form submission if a suggestion is selected
+            searchForm.on('submit', function(e) {
+                if (selectedIndex >= 0) {
+                    e.preventDefault();
+                }
+                clearSuggestions();
+            });
+
+            // Initialize
+            searchInput.attr('autocomplete', 'off');
+        });
+    </script>
+</body>
+</html>

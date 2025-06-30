@@ -1,0 +1,88 @@
+
+services:
+  mssql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "h4WfDYSz"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "h4WfDYSz", "-Q", "SELECT 1"]
+      timeout: 20s
+      retries: 15
+    networks:
+      - app-network
+
+  movie-app:
+    build: .
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=mssql-server;Database=Night;User Id=SA;Password=h4WfDYSz;"
+    ports:
+      - "8090:80"
+    depends_on:
+      - mssql-server
+    networks:
+      - app-network
+
+volumes:
+  mssql-data:
+
+networks:
+  app-network:
+    driver: bridge
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# services:
+#   mssql-server:
+#     image: mcr.microsoft.com/mssql/server:2022-latest
+#     environment:
+#       ACCEPT_EULA: "Y"
+#       SA_PASSWORD: "h4WfDYSz"
+#     ports:
+#       - "1433:1433"
+
+#   movie-app:
+#     build: .
+#     environment:
+#       DBServer: "."
+#       DBName: "Night"
+#       DBUser: "SA"
+#       DBPassword: "h4WfDYSz!"
+#       DBPort: "1433"
+#     ports:
+#       - "8090:80"

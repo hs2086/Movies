@@ -1,0 +1,283 @@
+@using MovieApp.ViewModel
+@model PaginatedMoviesVM
+
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="notification-container">
+        <div class="alert alert-@TempData["AlertType"] alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <i class="fas @((string)TempData["AlertType"] == "success" ? "fa-check-circle" : (string)TempData["AlertType"] == "danger" ? "fa-exclamation-circle" : "fa-info-circle") me-2"></i>
+                    @TempData["AlertMessage"]
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="trending-container">
+    <h1 class="section-title">@Model.CategoryName Movies</h1>
+
+    @if (!Model.Movies.Any())
+    {
+        <div class="no-movies">
+            <p>No movies found in this category.</p>
+            <a href="/Home" class="btn btn-primary">Browse All Movies</a>
+        </div>
+    }
+    else
+    {
+        <div class="movies-grid">
+            @foreach (var movie in Model.Movies)
+            {
+                <div class="movie-card">
+                    <a href="/Home/Show/@movie.Id">
+                        <img src="@movie.PosterUrl" alt="@movie.Name" class="movie-poster">
+                        <div class="movie-overlay">
+                            <h5>@movie.Name</h5>
+                            <span class="badge bg-warning">@movie.Rating.ToString("0.0") ★</span>
+                            <small>@movie.ReleaseDate.Year</small>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <nav aria-label="Movies pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Trending", new { category = ViewBag.CurrentCategory, page = 1 })">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Trending", new { category = ViewBag.CurrentCategory, page = Model.PageIndex - 1 })">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+
+                @if (Model.StartPage > 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+
+                @for (int i = Model.StartPage; i <= Model.EndPage; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Trending", new { category = ViewBag.CurrentCategory, page = i })">@i</a>
+                    </li>
+                }
+
+                @if (Model.EndPage < Model.TotalPages)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Trending", new { category = ViewBag.CurrentCategory, page = Model.PageIndex + 1 })">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Trending", new { category = ViewBag.CurrentCategory, page = Model.TotalPages })">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+
+<style>
+    .trending-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: white;
+    }
+
+    .section-title {
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    .no-movies {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(47, 50, 90, 0.5);
+        border-radius: 8px;
+    }
+
+    .movies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .movie-card {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        background: rgba(47, 50, 90, 0.5);
+    }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+
+    .movie-poster {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        padding: 1rem;
+        color: white;
+    }
+
+        .movie-overlay h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .remove-form {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+
+    .remove-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .movie-card:hover .remove-btn {
+        opacity: 1;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .page-item.active .page-link {
+        background-color: #e50914;
+        border-color: #e50914;
+    }
+
+    .page-link {
+        color: #fff;
+        background-color: rgba(47, 50, 90, 0.7);
+        border: 1px solid rgba(255,255,255,0.1);
+        min-width: 40px;
+        text-align: center;
+    }
+
+        .page-link:hover {
+            background-color: rgba(47, 50, 90, 0.9);
+        }
+
+    .notification-container {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 1050;
+        width: 350px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @@keyframes slideIn {
+        from
+
+    {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    }
+
+    @@keyframes fadeOut {
+        from
+
+    {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+
+    }
+
+    .fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+    }
+
+    @@media (max-width: 768px) {
+        .movies-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+
+        .movie-poster {
+            height: 225px;
+        }
+
+        .notification-container {
+            width: 90%;
+            left: 5%;
+            right: 5%;
+        }
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Auto-dismiss notifications after 5 seconds
+        setTimeout(function() {
+            $('.notification-container .alert').addClass('fade-out');
+            setTimeout(function() {
+                $('.notification-container .alert').alert('close');
+            }, 500);
+        }, 5000);
+
+        // Confirm before removing from favorites
+        $('.remove-form').on('submit', function(e) {
+            if (!confirm('Are you sure you want to remove this movie from your favorites?')) {
+                e.preventDefault();
+            }
+        });
+
+        // Pagination with full page reload
+        $(document).on('click', '.pagination a', function(e) {
+            // Let default behavior handle the navigation
+            // For AJAX implementation, use the code from previous examples
+        });
+    });
+</script>

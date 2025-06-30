@@ -1,0 +1,330 @@
+@using MovieApp.ViewModel
+@model ResetPasswordVM
+
+<div class="auth-container">
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <!-- Step 1: Email Input -->
+            @if (Model.Step == 1)
+            {
+                <div class="auth-header">
+                    <h1>Reset Password</h1>
+                    <p class="auth-subtitle">Enter your email to receive a verification code</p>
+                </div>
+
+                <form asp-action="Forgot" method="post" class="auth-form">
+                    <input type="hidden" asp-for="Step" value="1" />
+
+                    <div class="form-floating">
+                        <input asp-for="Email" class="form-control" placeholder=" " autofocus />
+                        <label asp-for="Email"></label>
+                        <span asp-validation-for="Email" class="validation-message"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-4 py-3">
+                        Send Verification Code <i class="fas fa-paper-plane ms-2"></i>
+                    </button>
+                </form>
+            }
+
+            <!-- Step 2: Code Verification -->
+            @if (Model.Step == 2)
+            {
+                <div class="auth-header">
+                    <h1>Verify Your Email</h1>
+                    <p class="auth-subtitle">We sent a 6-digit code to <strong>@Model.Email</strong></p>
+                </div>
+
+                <form asp-action="Forgot" method="post" class="auth-form">
+                    <input type="hidden" asp-for="Step" value="2" />
+                    <input type="hidden" asp-for="Email" value="@Model.Email" />
+
+                    <div class="form-floating verification-code">
+                        <input asp-for="VerificationCode" class="form-control" placeholder=" "
+                               maxlength="6" autofocus />
+                        <label asp-for="VerificationCode">Verification Code</label>
+                        <span asp-validation-for="VerificationCode" class="validation-message"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-4 py-3">
+                        Verify Code <i class="fas fa-check ms-2"></i>
+                    </button>
+                </form>
+            }
+
+            <!-- Step 3: New Password -->
+            @if (Model.Step == 3)
+            {
+                <div class="auth-header">
+                    <h1>Create New Password</h1>
+                    <p class="auth-subtitle">Enter and confirm your new password</p>
+                </div>
+
+                <form asp-action="Forgot" method="post" class="auth-form">
+                    <input type="hidden" asp-for="Step" value="3" />
+                    <input type="hidden" asp-for="Email" value="@Model.Email" />
+                    <input type="hidden" asp-for="VerificationCode" value="@Model.VerificationCode" />
+
+                    <div class="form-floating password-field">
+                        <input asp-for="NewPassword" type="password" class="form-control" placeholder=" " autofocus />
+                        <label asp-for="NewPassword">New Password</label>
+                        <span asp-validation-for="NewPassword" class="validation-message"></span>
+                    </div>
+
+                    <div class="form-floating mt-3 password-field">
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder=" " />
+                        <label asp-for="ConfirmPassword">Confirm Password</label>
+                        <span asp-validation-for="ConfirmPassword" class="validation-message"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-4 py-3">
+                        Reset Password <i class="fas fa-key ms-2"></i>
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base Styles */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #4f46e5;
+        --dark-bg: #0f0f1a;
+        --card-bg: #1a1a2e;
+        --input-bg: #2a2a3a;
+        --input-border: #3a3a4a;
+        --text-light: #e2e8f0;
+        --text-muted: #94a3b8;
+        --error-color: #ef4444;
+    }
+
+    /* Layout */
+    .auth-container {
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--dark-bg);
+        background-image: linear-gradient(rgba(15, 15, 26, 0.9), rgba(15, 15, 26, 0.9)), url('/images/auth-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 2rem;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .auth-wrapper {
+        width: 100%;
+        max-width: 500px;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .auth-card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .auth-header {
+        padding: 2rem 2rem 1rem;
+        text-align: center;
+    }
+
+    .auth-form {
+        padding: 1.5rem 2rem 2rem;
+    }
+
+    /* Typography */
+    h1 {
+        color: var(--text-light);
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .auth-subtitle strong {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+    /* Form Elements */
+    .form-floating {
+        position: relative;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-control {
+        background-color: var(--input-bg);
+        border: 1px solid var(--input-border);
+        color: var(--text-light);
+        height: calc(3.25rem + 2px);
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            background-color: var(--input-bg);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: transparent;
+        }
+
+    /* Labels */
+    label {
+        color: var(--text-muted);
+        padding: 0.5rem 1.2rem;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+        transform-origin: 0 0;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus ~ label,
+    .form-control:not(:placeholder-shown) ~ label {
+        transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+        padding: 0 0.5rem;
+        color: var(--primary-color);
+    }
+
+    /* Verification Code Specific Styles */
+    .verification-code input {
+        text-align: center;
+        letter-spacing: 0.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding-left: 0.5rem;
+    }
+
+    /* Password Fields */
+    .password-field {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+    /* Validation Messages */
+    .validation-message {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 768px) {
+        .auth-container
+
+    {
+        padding: 1rem;
+        background-image: none;
+    }
+
+    .auth-card {
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .auth-header {
+        padding: 1.5rem 1.5rem 0.5rem;
+    }
+
+    .auth-form {
+        padding: 1rem 1.5rem 1.5rem;
+    }
+
+    .verification-code input {
+        letter-spacing: 0.3rem;
+        font-size: 1rem;
+    }
+
+    }
+</style>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Auto-advance when verification code is complete
+        document.querySelector('input[maxlength="6"]')?.addEventListener('input', function() {
+            if (this.value.length === 6) {
+                this.form.submit();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,263 @@
+@model MovieApp.ViewModel.ProfileViewModel
+
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="notification-container">
+        <div class="alert alert-@TempData["AlertType"] alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <i class="fas @((string)TempData["AlertType"] == "success" ? "fa-check-circle" : (string)TempData["AlertType"] == "danger" ? "fa-exclamation-circle" : "fa-info-circle") me-2"></i>
+                    @TempData["AlertMessage"]
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-info">
+            <h1>@Model.Name</h1>
+            <p class="username">@@@Model.Username</p>
+            <p class="member-since"><i class="fas fa-calendar-alt"></i> Member since @Model.MemberSince.ToString("MMMM yyyy")</p>
+            <p class="movie-count"><i class="fas fa-film"></i> @Model.TotalMoviesInList favorite movies</p>
+        </div>
+    </div>
+
+    <div class="favorites-section">
+        <h2><i class="fas fa-heart"></i> Your Favorite Movies</h2>
+        @if (Model.FavoriteMovies.Any())
+        {
+            <div class="favorites-grid">
+                @foreach (var favorite in Model.FavoriteMovies)
+                {
+                    <div class="movie-card">
+                        <div class="movie-poster-container">
+                            <img src="@favorite.Movie.PosterUrl" alt="@favorite.Movie.Title" class="movie-poster">
+                            <div class="movie-overlay">
+                                <h5>@favorite.Movie.Title</h5>
+                                <span class="badge bg-warning">@favorite.Movie.Rating.ToString("0.0") ★</span>
+                                <small>Added @favorite.DateAdded.ToString("MMM dd, yyyy")</small>
+                            </div>
+                        </div>
+                        <div class="movie-actions">
+                            <a href="/Home/Show/@favorite.MovieId" class="btn btn-sm btn-primary">View</a>
+                            <form asp-action="RemoveFromFavorites" asp-controller="Home" method="post"
+                                  onsubmit="return confirm('Are you sure you want to remove this movie from your favorites?');">
+                                <input type="hidden" name="movieId" value="@favorite.MovieId" />
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="no-favorites">
+                <p>You haven't added any movies to your favorites yet.</p>
+                <a href="/Home" class="btn btn-primary">Browse Movies</a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: white;
+    }
+
+    .profile-header {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .profile-info h1 {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .username {
+        color: #aaa;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .member-since, .movie-count {
+        color: #ddd;
+        margin-bottom: 0.5rem;
+    }
+
+    .favorites-section {
+        margin-top: 2rem;
+    }
+
+        .favorites-section h2 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+    .favorites-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .movie-card {
+        background: rgba(47, 50, 90, 0.5);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .movie-poster-container {
+        position: relative;
+    }
+
+    .movie-poster {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        padding: 1rem;
+    }
+
+        .movie-overlay h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .movie-actions {
+        padding: 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .no-favorites {
+        text-align: center;
+        padding: 2rem;
+        color: #aaa;
+    }
+
+    @@media (max-width: 768px) {
+        .favorites-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .movie-poster {
+            height: 200px;
+        }
+    }
+
+    .notification-container {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 1050;
+        width: 350px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+        .notification-container .alert {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid;
+        }
+
+        .notification-container .alert-success {
+            border-left-color: #28a745;
+        }
+
+        .notification-container .alert-danger {
+            border-left-color: #dc3545;
+        }
+
+        .notification-container .alert-warning {
+            border-left-color: #ffc107;
+        }
+
+    @@keyframes slideIn {
+        from
+
+    {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    }
+
+    @@keyframes fadeOut {
+        from
+
+    {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+
+    }
+
+    .fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+    }
+</style>
+
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+        // Auto-dismiss notifications after 5 seconds
+        const alert = document.querySelector('.notification-container .alert');
+        if (alert) {
+            setTimeout(() => {
+                alert.classList.add('fade-out');
+                setTimeout(() => {
+                    $(alert).alert('close');
+                }, 500);
+            }, 5000);
+        }
+
+        // Close button functionality
+        $(document).on('click', '[data-bs-dismiss="alert"]', function() {
+            $(this).closest('.alert').addClass('fade-out');
+            setTimeout(() => {
+                $(this).closest('.alert').alert('close');
+            }, 500);
+        });
+    });
+</script>

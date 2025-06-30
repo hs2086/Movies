@@ -1,0 +1,424 @@
+@using MovieApp.ViewModel
+@model MovieAndSomeMovieFromTheSameCategoryVM
+
+<div class="notification-container">
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div class="notification alert alert-@TempData["AlertType"] alert-dismissible fade show" role="alert">
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    @TempData["AlertMessage"]
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="movie-viewer-container">
+    <div class="movie-fullscreen active" style="background-image: url('@Model.movieVM.PosterUrl');">
+        <div class="movie-overlay">
+            <div class="movie-content">
+                <h1 class="movie-title">@Model.movieVM.Name</h1>
+                <div class="movie-meta">
+                    <span class="badge bg-warning text-dark">@Model.movieVM.Rating ★</span>
+                    <span class="movie-year">| @Model.movieVM.ReleaseDate.Year</span>
+                </div>
+                <p class="movie-description">@Model.movieVM.Description</p>
+                <div class="movie-actions">
+                    <button class="btn btn-primary">Watch Now</button>
+                    <a href="/Home/AddList/@Model.movieVM.Id" class="btn btn-outline-light">+ My List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="popular-movies-container">
+    <h2 class="section-title">Similar Movies</h2>
+    <div class="popular-movies-wrapper">
+        @if (Model.MoviesFromTheSameCategory.Any())
+        {
+            <button class="popular-nav-btn popular-prev-btn">❮</button>
+            <div class="popular-movies-scroll">
+                @foreach (MovieVM movie in Model.MoviesFromTheSameCategory)
+                {
+                    <div class="popular-movie-card-wrapper">
+                        <a href="/Home/Show/@movie.Id" class="popular-movie-card-link">
+                            <div class="popular-movie-card" style="background-image: url('@movie.PosterUrl'), url('/images/default-poster.jpg');">
+                                <div class="movie-overlay">
+                                    <div class="movie-card-content">
+                                        <h3 class="movie-title-popular">@movie.Name</h3>
+                                        <div class="movie-info-popular">
+                                            <span class="movie-year-popular">@movie.ReleaseDate.Year</span>
+                                            <span class="badge bg-warning text-dark">@movie.Rating ★</span>
+                                        </div>
+                                        <p class="movie-description-popular">@movie.Description</p>
+                                        <div class="btn btn-sm btn-primary">View Details</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <button class="popular-nav-btn popular-next-btn">❯</button>
+        }
+        else
+        {
+            <div class="no-movies-message">
+                No similar movies found
+            </div>
+        }
+    </div>
+</div>
+
+
+<style>
+    /* Base styles */
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow-x: hidden;
+        font-family: Arial, sans-serif;
+        background-color: #000;
+    }
+
+    /* Main movie viewer */
+    .movie-viewer-container {
+        position: relative;
+        width: 100vw;
+        height: 80vh;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .movie-fullscreen {
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: #000;
+        position: relative;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        padding: 2rem;
+        color: white;
+    }
+
+    .movie-title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .movie-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: center;
+    }
+
+    .movie-description {
+        max-width: 50%;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .movie-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #e50914;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #f40612;
+        }
+
+    .btn-outline-light {
+        background-color: transparent;
+        border: 1px solid white;
+        color: white;
+    }
+
+        .btn-outline-light:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+    .badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+    }
+
+    /* Popular movies section */
+    .popular-movies-container {
+        position: relative;
+        width: 100%;
+        padding: 2rem 4rem;
+        background-color: black;
+        margin-top: 2rem;
+    }
+
+    .popular-movies-scroll {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        gap: 1.5rem;
+        padding: 1rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .popular-movie-card-wrapper {
+        flex: 0 0 300px;
+    }
+
+    .popular-movie-card {
+        height: 450px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+    }
+
+        .popular-movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+        }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+    }
+
+    .movie-card-content {
+        color: white;
+    }
+
+    .movie-title-popular {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .movie-info-popular {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .movie-year-popular {
+        color: #ddd;
+        font-size: 0.9rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .movie-description-popular {
+        color: #eee;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+
+    /* Navigation buttons */
+    .popular-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.9);
+        border: none;
+        color: black;
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+        .popular-nav-btn:hover {
+            background: white;
+        }
+
+    .popular-prev-btn {
+        left: 20px;
+    }
+
+    .popular-next-btn {
+        right: 20px;
+    }
+
+    .btn.btn-sm.btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+        .btn.btn-sm.btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+        .btn.btn-sm.btn-primary:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .popular-movies-container {
+            padding: 1rem;
+        }
+
+        .popular-movie-card-wrapper {
+            flex: 0 0 250px;
+        }
+
+        .popular-movie-card {
+            height: 400px;
+        }
+
+        .popular-nav-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+    }
+    /* Notification styling */
+    .notification-container {
+        position: fixed;
+        top: 70px; /* Adjust based on your navbar height */
+        right: 20px;
+        z-index: 1050; /* Higher than navbar's z-index */
+        width: 350px;
+    }
+
+    /* Animation for appearing/disappearing */
+    @@keyframes slideIn {
+        from
+
+    {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+
+    }
+
+    @@keyframes fadeOut {
+        from
+
+    {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+
+    }
+
+    .notification {
+        animation: slideIn 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin-bottom: 15px;
+    }
+
+        .notification.fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+</style>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+        // Popular movies navigation
+        const popularScroll = document.querySelector('.popular-movies-scroll');
+        const popularPrevBtn = document.querySelector('.popular-prev-btn');
+        const popularNextBtn = document.querySelector('.popular-next-btn');
+
+        if (popularScroll && popularScroll.children.length > 0) {
+            popularPrevBtn.addEventListener('click', () => {
+                popularScroll.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+
+            popularNextBtn.addEventListener('click', () => {
+                popularScroll.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+        } else {
+            // Hide navigation buttons if no movies
+            if (popularPrevBtn) popularPrevBtn.style.display = 'none';
+            if (popularNextBtn) popularNextBtn.style.display = 'none';
+        }
+    });
+
+        $(document).ready(function() {
+        // Auto-dismiss notifications after 5 seconds
+        setTimeout(function() {
+            $('.notification').addClass('fade-out');
+            setTimeout(function() {
+                $('.notification').alert('close');
+            }, 500);
+        }, 5000);
+
+        // Manual dismiss
+        $('.notification [data-bs-dismiss="alert"]').click(function() {
+            $(this).closest('.notification').addClass('fade-out');
+            setTimeout(function() {
+                $(this).closest('.notification').alert('close');
+            }.bind(this), 500);
+        });
+    });
+
+</script>
